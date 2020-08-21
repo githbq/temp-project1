@@ -2,7 +2,9 @@
  * entry
  */
 import axios from 'axios'
+import getProjectInfo from './getProjectInfo'
 import handleGit from './handleGit'
+import configManager from './configManager'
 
 
 // (async () => {
@@ -11,11 +13,28 @@ import handleGit from './handleGit'
 //     console.log(res.data)
 // })()
 
-(async () => {
-    const res = await handleGit()
-    console.log(res)
 
-})()
+// console.log('~~~~~~~~~~~~~~获取项目工程信息~~~~~~~~~~~~~~~~~~');
+
+// (async () => {
+
+//     const res1 = await getProjectInfo()
+//     console.log(res1)
+// })();
+
+
+
+// console.log('~~~~~~~~~~~~~~初始化中心仓库~~~~~~~~~~~~~~~~~~');
+// (async () => {
+//     const res2 = await handleGit()
+//     console.log(res2)
+// })();
+
+console.log('~~~~~~~~~~~~~~getConfig~~~~~~~~~~~~~~~~~~');
+(async () => {
+    const res2 = await configManager()
+    console.log(res2)
+})();
 
 
 // 仓库检测

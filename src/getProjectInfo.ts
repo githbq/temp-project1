@@ -8,35 +8,39 @@ const projectInfoHandlers =
             key: 'banchName',
             cmd: 'git name-rev --name-only HEAD',
             handle(stdout) {
-                return stdout
+                return stdout.replace('\n', '')
             }
         },
         {
-            key: 'banchName',
+            key: 'repository',
             cmd: 'git remote -v',
             handle(stdout) {
-                return stdout
+                let result = ((stdout.match(/(?:\t).*?(?:\(fetch\))/)) || [])[0] || ''
+                if (result) {
+                    result = result.replace(/(\t|^\s+|\s+$|\s+\(fetch\))+/g, '')
+                }
+                return result
             }
         },
         {
             key: 'userName',
             cmd: 'git config user.name',
             handle(stdout) {
-                return stdout
+                return stdout.replace('\n', '')
             }
         },
         {
             key: 'userEmail',
             cmd: 'git config user.email',
             handle(stdout) {
-                return stdout
+                return stdout.replace('\n', '')
             }
         },
         {
             key: 'commitId',
             cmd: 'git rev-parse HEAD',
             handle(stdout) {
-
+                return stdout.replace('\n', '')
             }
         }
     ]
