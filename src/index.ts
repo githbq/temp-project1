@@ -1,40 +1,51 @@
 /**
  * entry
  */
+import * as fs from 'fs-extra'
 import axios from 'axios'
 import getProjectInfo from './getProjectInfo'
-import handleGit from './handleGit'
-import configManager from './configManager'
+import * as centerRepositoryManager from './centerRepositoryManager'
+import * as configManager from './configManager'
+import * as jsonBeautify from 'json-beautify'
+import * as yargs from 'yargs'
 
 
-// (async () => {
-//     const res = await axios.get('http://gitlab-jdd.jd.com/jdd/feds/raw/master/%E7%89%A9%E6%96%99%E5%B8%82%E5%9C%BA%E6%96%B9%E6%A1%88%E8%AE%A8%E8%AE%BA.md?inline=true')
-//     debugger
-//     console.log(res.data)
-// })()
+if (yargs.argv.config) {
+    (async () => {
+        const res = await axios.get('http://gitlab-jdd.jd.com/jdd/feds/raw/master/%E7%89%A9%E6%96%99%E5%B8%82%E5%9C%BA%E6%96%B9%E6%A1%88%E8%AE%A8%E8%AE%BA.md?inline=true')
+        debugger
+        console.log(res.data)
+    })()
+}
 
+if (yargs.argv.info) {
+    console.log('~~~~~~~~~~~~~~获取项目工程信息~~~~~~~~~~~~~~~~~~');
 
-// console.log('~~~~~~~~~~~~~~获取项目工程信息~~~~~~~~~~~~~~~~~~');
+    (async () => {
 
-// (async () => {
+        const res1 = await getProjectInfo()
+        console.log(res1)
+    })();
+}
 
-//     const res1 = await getProjectInfo()
-//     console.log(res1)
-// })();
+if (yargs.argv.init) {
+    console.log('~~~~~~~~~~~~~~初始化中心仓库~~~~~~~~~~~~~~~~~~');
+    (async () => {
+        await centerRepositoryManager.initPrivateCenterRepository()
+        console.log('初始化隐式中心仓库完成')
+    })();
+}
 
-
-
-// console.log('~~~~~~~~~~~~~~初始化中心仓库~~~~~~~~~~~~~~~~~~');
-// (async () => {
-//     const res2 = await handleGit()
-//     console.log(res2)
-// })();
-
-console.log('~~~~~~~~~~~~~~getConfig~~~~~~~~~~~~~~~~~~');
-(async () => {
-    const res2 = await configManager()
-    console.log(res2)
-})();
+if (yargs.argv.add) {
+    console.log('~~~~~~~~~~~~~~configManager add~~~~~~~~~~~~~~~~~~');
+    (async () => {
+        const projectInfo: any = await getProjectInfo()
+        const res = await configManager.add(
+            new configManager.User(projectInfo.userName, projectInfo.userEmail, 'departent1' + Math.random()),
+            new configManager.Repository(projectInfo.repository, projectInfo.banchName, projectInfo.commitId)
+        );
+    })();
+}
 
 
 // 仓库检测
