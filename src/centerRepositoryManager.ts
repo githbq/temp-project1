@@ -32,9 +32,10 @@ export const initPrivateCenterRepository = async () => {
 
 export const udpateConfigFile = async (config) => {
     if (!config) return
+    await exec(`git reset --hard origin/master`, { cwd: centerRepositoryDirectory }, true)
     const configContent = (jsonBeautify as any)(config, null, 2, 80)
     await fs.outputFile(configFileAbsolutePath, configContent)
-    await exec('git commit -am xxxx', { cwd: centerRepositoryDirectory }, true)
+    await exec(`git commit -am ${config[config.length - 1].user.name}-register`, { cwd: centerRepositoryDirectory }, true)
     await exec('git push origin master', { cwd: centerRepositoryDirectory }, true)
 }
 

@@ -1,8 +1,4 @@
-import axios from 'axios'
-
-import fs from 'fs-extra'
-import { udpateConfigFile, getResourceConfig } from './centerRepositoryManager'
-import { configFileRemoteUrl, configFileAbsolutePath } from './consts'
+import { udpateConfigFile, getResourceConfig } from './centerRepositoryManager' 
 
 export class User {
     public name
