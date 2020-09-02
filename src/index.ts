@@ -6,15 +6,13 @@ import axios from 'axios'
 import getProjectInfo from './getProjectInfo'
 import * as centerRepositoryManager from './centerRepositoryManager'
 import * as configManager from './configManager'
-import * as jsonBeautify from 'json-beautify'
 import * as yargs from 'yargs'
 
 
 if (yargs.argv.config) {
     (async () => {
-        const res = await axios.get('http://gitlab-jdd.jd.com/jdd/feds/raw/master/%E7%89%A9%E6%96%99%E5%B8%82%E5%9C%BA%E6%96%B9%E6%A1%88%E8%AE%A8%E8%AE%BA.md?inline=true')
-        debugger
-        console.log(res.data)
+        const data = await centerRepositoryManager.getResourceConfig()
+        console.log(data.length)
     })()
 }
 
@@ -25,7 +23,7 @@ if (yargs.argv.info) {
 
         const res1 = await getProjectInfo()
         console.log(res1)
-    })();
+    })()
 }
 
 if (yargs.argv.init) {
@@ -33,7 +31,7 @@ if (yargs.argv.init) {
     (async () => {
         await centerRepositoryManager.initPrivateCenterRepository()
         console.log('初始化隐式中心仓库完成')
-    })();
+    })()
 }
 
 if (yargs.argv.add) {
@@ -41,10 +39,10 @@ if (yargs.argv.add) {
     (async () => {
         const projectInfo: any = await getProjectInfo()
         const res = await configManager.add(
-            new configManager.User(projectInfo.userName, projectInfo.userEmail, 'departent1' + Math.random()),
+            new configManager.User(projectInfo.userName, projectInfo.userEmail, 'department1' + Date.now()),
             new configManager.Repository(projectInfo.repository, projectInfo.banchName, projectInfo.commitId)
-        );
-    })();
+        )
+    })()
 }
 
 
