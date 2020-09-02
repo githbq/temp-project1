@@ -43,6 +43,17 @@ if (yargs.argv.add) {
     })()
 }
 
+if (yargs.argv.clone) {
+    console.log('~~~~~~~~~~~~~~configManager add~~~~~~~~~~~~~~~~~~');
+    (async () => {
+        const projectInfo: any = await getProjectInfo()
+        const res = await configManager.add(
+            new configManager.User(projectInfo.userName, projectInfo.userEmail, 'department1' + Date.now()),
+            new configManager.Repository(projectInfo.repository, projectInfo.banchName, projectInfo.commitId)
+        )
+    })()
+}
+
 
 // 仓库检测
 // 仓库地址、必填字段、目录结构

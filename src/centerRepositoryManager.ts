@@ -1,18 +1,17 @@
 
-import * as fs from 'fs-extra'
-import axios from 'axios'
-import * as userHome from 'user-home'
-import * as path from 'path'
+import * as fs from 'fs-extra' 
 import * as jsonBeautify from 'json-beautify'
 import exec from './utils/exec'
 
-const userHomeDirectory = path.join(userHome, '.jdd-cli-cache')
-const centerRepositoryFolderName = 'center-repository'
-const centerRepositoryDirectory = path.join(userHomeDirectory, centerRepositoryFolderName)
-const centerRepositoryGitUrl = 'https://github.com/githbq/center-repository.git'
-const configFileRelativePath = 'resource-config.json'
-const configFileAbsolutePath = path.join(centerRepositoryDirectory, configFileRelativePath)
-const configFileRemoteUrl = 'https://raw.githubusercontent.com/githbq/center-repository/master/resource-config.json'
+import {
+    userHomeDirectory,
+    centerRepositoryFolderName,
+    centerRepositoryDirectory,
+    centerRepositoryGitUrl,
+    configFileRelativePath,
+    configFileAbsolutePath,
+    configFileRemoteUrl
+} from './consts'
 
 export const initPrivateCenterRepository = async () => {
     // 确认用户目录
