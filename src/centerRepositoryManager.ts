@@ -34,7 +34,9 @@ export const initPrivateCenterRepository = async () => {
     await exec('open ' + userHomeDirectory)
 }
 export const syncCenterRepository = async () => {
-    await exec(`git remote update && git reset --hard origin/master`, { cwd: centerRepositoryDirectory }, true)
+    await exec([`git checkout master`, `git remote update`, `git reset --hard origin/master`],
+        { cwd: centerRepositoryDirectory }, true)
+
 }
 
 export const udpateConfigFile = async (config) => {
@@ -67,28 +69,50 @@ export const clonePublicCenterRepository = async (cwd) => {
         true)
 }
 
-export const initPublicCenterRepositoryWitchBranch = async (cwd?, branch?) => {
+export const initPublicCenterRepositoryWitchBranch = async (cwd?, branch = 'common') => {
+    if (branch === 'master') {
+        // 避免master分支被操作
+        return
+    }
     const projectPath = path.join(cwd, centerRepositoryFolderName)
     const configPath = path.join(projectPath, configFileRelativePath)
+    console.log(`移除待clone目标文件夹: ${projectPath}`)
     await fs.remove(projectPath)
+    debug(`开始克隆: ${centerRepositoryGitUrl} master`)
     await exec(
         `git clone --depth=1 ${centerRepositoryGitUrl} ${centerRepositoryFolderName} -b master`,
         { cwd },
         true)
     const resourceConfig = await fs.readJSON(configPath)
-    debug('resourceConfigresourceConfigresourceConfig', resourceConfig)
+    debug('resourceConfig %O', resourceConfig)
+    debug(`重新创建对应分支: ${branch}`, resourceConfig)
+    await exec(
+        `git branch -D ${branch} && git checkout -b ${branch}`,
+        { cwd },
+        true)
     await initSubmodules(projectPath, resourceConfig)
+    await exec(
+        `git push origin branch`,
+        { cwd },
+        true)
 }
 
 const initSubmodules = async (cwd, config) => {
     const promises = config.map(
         async ({ user, repository }) => {
+            console.log(`添加子模块${repository.name}@${repository.url} ${repository.branch}`)
             await exec(
-                `git submodule add ${repository.url} ${getSubmouleRelativePath(user.department, repository.name)}`,
+                `git submodule add -b ${repository.branch} ${repository.url} ${getSubmouleRelativePath(user.department, repository.name)}`,
                 { cwd },
                 true)
         })
     await Promise.all(promises)
+    await exec(
+        `git commit -am "init"`,
+        { cwd },
+        true)
+
+    console.log(`本地中心仓库初始化完成: ${cwd}`)
 }
 
 

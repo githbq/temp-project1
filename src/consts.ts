@@ -1,7 +1,7 @@
 import * as userHome from 'user-home'
 import * as path from 'path'
 
-export const cwd = process.cwd() || '/Users/hubiqing/temp' 
+export const cwd = process.cwd() || '/Users/hubiqing/temp'
 export const userHomeDirectory = path.join(userHome, '.jdd-cli-cache')
 export const centerRepositoryFolderName = 'center-repository'
 export const centerRepositoryDirectory = path.join(userHomeDirectory, centerRepositoryFolderName)

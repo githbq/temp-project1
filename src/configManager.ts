@@ -68,6 +68,8 @@ const mergeConfigs = (configs, config) => {
         Object.assign(existingConfig, config)
     }
 }
+
+
 export const add = async (user: User, repository: Repository) => {
     const resourceItems = await getResourceConfig()
 
@@ -79,5 +81,19 @@ export const add = async (user: User, repository: Repository) => {
     mergeConfigs(resourceItems, resourceItem)
     await udpateConfigFile(resourceItems)
     console.log(`注册${resourceItem.repository.name}成功`)
+    return resourceItems
+}
+
+/**
+ * 根据部门与项目名移除指定资源后更新仓库
+ * @param department 
+ * @param projectName 
+ */
+export const remove = async (department, name) => {
+    let resourceItems = await getResourceConfig()
+    resourceItems = resourceItems.filter(n => !(n.user.department === department && n.repository.name === name))
+
+    await udpateConfigFile(resourceItems)
+    console.log(`更新成功`)
     return resourceItems
 }

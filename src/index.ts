@@ -46,7 +46,7 @@ if (yargs.argv.add) {
 if (yargs.argv.clone) {
     console.log('~~~~~~~~~~~~~~configManager clone~~~~~~~~~~~~~~~~~~');
     (async () => {
-        await centerRepositoryManager.initPublicCenterRepositoryWitchBranch()
+        await centerRepositoryManager.initPublicCenterRepositoryWitchBranch('/Users/hubiqing/temp', 'common')
     })()
 }
 
