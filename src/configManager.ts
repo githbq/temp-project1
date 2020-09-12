@@ -17,8 +17,8 @@ export class Repository {
     public commitId
     public name
     constructor(url, name, branch, commitId) {
-        this.name = name
         this.url = url
+        this.name = name
         this.branch = branch
         this.commitId = commitId
     }
@@ -31,11 +31,53 @@ export class ResourceItem {
         this.repository = repository
     }
 }
-export const add = async (user: User, repository: Repository) => {
-    const config = await getResourceConfig()
-    const resourceItem = new ResourceItem(user, repository)
-    config.push(resourceItem)
-    await udpateConfigFile(config)
+const check = async (configs, config) => {
+    let result = true
+    const checkActions = [
+        () => {
+            if (!config.repository.name) {
+                console.log(`请确认该项目是否配置package.json name 值`)
+                return false
+            }
+        },
+        () => {
+            const existingConfig = configs.find(n => n.user.department === config.user.department && n.repository.name === config.repository.name)
+            if (existingConfig) {
+                if (existingConfig.user.name !== config.user.name) {
+                    console.log(`已存在资源${config.repository.name},请更改包名再注册`)
+                    return false
+                }
+            }
+        }
+    ]
+    for (let checkAction of checkActions) {
+        const checkResult = await checkAction()
+        if (checkResult === false) {
+            result = checkResult
+            break
+        }
+    }
+    return result
+}
 
-    return config
+const mergeConfigs = (configs, config) => {
+    const existingConfig = configs.find(n => n.user.name === config.user.name && n.repository.name === config.repository.name)
+    if (!existingConfig) {
+        configs.push(config)
+    } else {
+        Object.assign(existingConfig, config)
+    }
+}
+export const add = async (user: User, repository: Repository) => {
+    const resourceItems = await getResourceConfig()
+
+    const resourceItem = new ResourceItem(user, repository)
+    const checkResult = await check(resourceItems, resourceItem)
+    if (!checkResult) {
+        return
+    }
+    mergeConfigs(resourceItems, resourceItem)
+    await udpateConfigFile(resourceItems)
+    console.log(`注册${resourceItem.repository.name}成功`)
+    return resourceItems
 }

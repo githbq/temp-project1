@@ -3,6 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs-extra'
 import * as jsonBeautify from 'json-beautify'
 import exec from './utils/exec'
+import debug from './utils/debug'
 
 import {
     cwd,
@@ -38,24 +39,23 @@ export const syncCenterRepository = async () => {
 
 export const udpateConfigFile = async (config) => {
     if (!config) return
-    console.log(1)
+    debug('1:syncCenterRepository')
     await syncCenterRepository()
     const configContent = (jsonBeautify as any)(config, null, 2, 80)
-    console.log(2)
+    debug('2:outputFile')
     await fs.outputFile(configFileAbsolutePath, configContent)
-    console.log(3)
+    debug('3:git commit')
     await exec(`git commit -am ${config[config.length - 1].user.name}-register`, { cwd: centerRepositoryDirectory }, true)
-    console.log(4)
+    debug('4:git push')
     await exec('git push origin master', { cwd: centerRepositoryDirectory }, true)
 
     const configNew = await getResourceConfig()
-    console.log('config length', configNew.length)
+    debug('config length', configNew.length)
 }
 
 export const getResourceConfig = async () => {
     await syncCenterRepository()
     const data = await fs.readJson(configFileAbsolutePath) || []
-    console.log('datadatadatadatadata.length', data[data.length - 1])
     return data
 }
 
@@ -67,7 +67,7 @@ export const clonePublicCenterRepository = async (cwd) => {
         true)
 }
 
-export const initPublicCenterRepositoryWitchBranch = async (cwd?, branch?) => { 
+export const initPublicCenterRepositoryWitchBranch = async (cwd?, branch?) => {
     const projectPath = path.join(cwd, centerRepositoryFolderName)
     const configPath = path.join(projectPath, configFileRelativePath)
     await fs.remove(projectPath)
@@ -76,7 +76,7 @@ export const initPublicCenterRepositoryWitchBranch = async (cwd?, branch?) => {
         { cwd },
         true)
     const resourceConfig = await fs.readJSON(configPath)
-    console.log('resourceConfigresourceConfigresourceConfig', resourceConfig)
+    debug('resourceConfigresourceConfigresourceConfig', resourceConfig)
     await initSubmodules(projectPath, resourceConfig)
 }
 
@@ -95,6 +95,5 @@ const initSubmodules = async (cwd, config) => {
 // 从远程直接读取文件内容存在较大缓存问题
 // export const getResourceConfig = async () => {
 //     const { data } = await axios.get(configFileRemoteUrl + '?n=' + Math.random())
-//     console.log('datadatadatadatadata.length', data[data.length-1])
 //     return data
 // }
