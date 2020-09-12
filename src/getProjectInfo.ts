@@ -1,20 +1,24 @@
 
+import * as path from 'path'
+import * as fs from 'fs-extra'
+import { cwd } from './consts'
 import exec from './utils/exec'
 
 
-const projectInfoHandlers =
+
+const projectInfohandlers =
     [
         {
             key: 'banchName',
             cmd: 'git name-rev --name-only HEAD',
-            handle(stdout) {
+            handler(stdout) {
                 return stdout.replace('\n', '')
             }
         },
         {
             key: 'repository',
             cmd: 'git remote -v',
-            handle(stdout) {
+            handler(stdout) {
                 let result = ((stdout.match(/(?:\t).*?(?:\(fetch\))/)) || [])[0] || ''
                 if (result) {
                     result = result.replace(/(\t|^\s+|\s+$|\s+\(fetch\))+/g, '')
@@ -25,34 +29,42 @@ const projectInfoHandlers =
         {
             key: 'userName',
             cmd: 'git config user.name',
-            handle(stdout) {
+            handler(stdout) {
                 return stdout.replace('\n', '')
             }
         },
         {
             key: 'userEmail',
             cmd: 'git config user.email',
-            handle(stdout) {
+            handler(stdout) {
                 return stdout.replace('\n', '')
             }
         },
         {
             key: 'commitId',
             cmd: 'git rev-parse HEAD',
-            handle(stdout) {
+            handler(stdout) {
                 return stdout.replace('\n', '')
             }
-        }
+        },
+        {
+            key: 'name',
+            async handler() {
+                const packageJSON = await fs.readJSON(path.join(cwd, 'package.json'))
+                return packageJSON.name
+            }
+        },
+
     ]
 export default async () => {
     const data = {}
     await Promise.all(
-        projectInfoHandlers.map(async item => {
+        projectInfohandlers.map(async item => {
             let result
             if (item.cmd) {
                 result = await exec(item.cmd)
             }
-            data[item.key] = item.handle(result)
+            data[item.key] = await item.handler(result)
         })
     )
     return data

@@ -1,17 +1,21 @@
 
-import * as fs from 'fs-extra' 
+import * as path from 'path'
+import * as fs from 'fs-extra'
 import * as jsonBeautify from 'json-beautify'
 import exec from './utils/exec'
 
 import {
+    cwd,
     userHomeDirectory,
     centerRepositoryFolderName,
     centerRepositoryDirectory,
     centerRepositoryGitUrl,
-    configFileRelativePath,
     configFileAbsolutePath,
-    configFileRemoteUrl
+    configFileRelativePath,
+    getSubmouleRelativePath
 } from './consts'
+
+
 
 export const initPrivateCenterRepository = async () => {
     // 确认用户目录
@@ -54,6 +58,40 @@ export const getResourceConfig = async () => {
     console.log('datadatadatadatadata.length', data[data.length - 1])
     return data
 }
+
+
+export const clonePublicCenterRepository = async (cwd) => {
+    await exec(
+        `git clone ${centerRepositoryGitUrl} ${centerRepositoryFolderName} -b master`,
+        { cwd },
+        true)
+}
+
+export const initPublicCenterRepositoryWitchBranch = async (cwd?, branch?) => { 
+    const projectPath = path.join(cwd, centerRepositoryFolderName)
+    const configPath = path.join(projectPath, configFileRelativePath)
+    await fs.remove(projectPath)
+    await exec(
+        `git clone --depth=1 ${centerRepositoryGitUrl} ${centerRepositoryFolderName} -b master`,
+        { cwd },
+        true)
+    const resourceConfig = await fs.readJSON(configPath)
+    console.log('resourceConfigresourceConfigresourceConfig', resourceConfig)
+    await initSubmodules(projectPath, resourceConfig)
+}
+
+const initSubmodules = async (cwd, config) => {
+    const promises = config.map(
+        async ({ user, repository }) => {
+            await exec(
+                `git submodule add ${repository.url} ${getSubmouleRelativePath(user.department, repository.name)}`,
+                { cwd },
+                true)
+        })
+    await Promise.all(promises)
+}
+
+
 // 从远程直接读取文件内容存在较大缓存问题
 // export const getResourceConfig = async () => {
 //     const { data } = await axios.get(configFileRemoteUrl + '?n=' + Math.random())

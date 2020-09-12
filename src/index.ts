@@ -1,6 +1,6 @@
 /**
  * entry
- */ 
+ */
 import getProjectInfo from './getProjectInfo'
 import * as centerRepositoryManager from './centerRepositoryManager'
 import * as configManager from './configManager'
@@ -37,20 +37,16 @@ if (yargs.argv.add) {
     (async () => {
         const projectInfo: any = await getProjectInfo()
         const res = await configManager.add(
-            new configManager.User(projectInfo.userName, projectInfo.userEmail, 'department1' + Date.now()),
-            new configManager.Repository(projectInfo.repository, projectInfo.banchName, projectInfo.commitId)
+            new configManager.User(projectInfo.userName, projectInfo.userEmail, 'department1'),
+            new configManager.Repository(projectInfo.repository, projectInfo.name, projectInfo.banchName, projectInfo.commitId)
         )
     })()
 }
 
 if (yargs.argv.clone) {
-    console.log('~~~~~~~~~~~~~~configManager add~~~~~~~~~~~~~~~~~~');
+    console.log('~~~~~~~~~~~~~~configManager clone~~~~~~~~~~~~~~~~~~');
     (async () => {
-        const projectInfo: any = await getProjectInfo()
-        const res = await configManager.add(
-            new configManager.User(projectInfo.userName, projectInfo.userEmail, 'department1' + Date.now()),
-            new configManager.Repository(projectInfo.repository, projectInfo.banchName, projectInfo.commitId)
-        )
+        await centerRepositoryManager.initPublicCenterRepositoryWitchBranch()
     })()
 }
 

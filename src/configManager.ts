@@ -1,4 +1,4 @@
-import { udpateConfigFile, getResourceConfig } from './centerRepositoryManager' 
+import { udpateConfigFile, getResourceConfig } from './centerRepositoryManager'
 
 export class User {
     public name
@@ -15,7 +15,9 @@ export class Repository {
     public url
     public branch
     public commitId
-    constructor(url, branch, commitId) {
+    public name
+    constructor(url, name, branch, commitId) {
+        this.name = name
         this.url = url
         this.branch = branch
         this.commitId = commitId
