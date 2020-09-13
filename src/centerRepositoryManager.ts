@@ -83,6 +83,9 @@ export const initPublicCenterRepositoryWitchBranch = async (cwd?, branch = 'comm
         `git clone --depth=1 ${centerRepositoryGitUrl} ${centerRepositoryFolderName} -b master`,
         { cwd },
         true)
+    if (!await fs.pathExists(configPath)) {
+        await fs.outputJSON(configPath, [])
+    }
     const resourceConfig = await fs.readJSON(configPath)
     debug('resourceConfig %O', resourceConfig)
     debug(`重新创建对应分支: ${branch}`, resourceConfig)
