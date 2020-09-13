@@ -112,7 +112,7 @@ const initSubmodules = async (cwd, config) => {
         { cwd },
         true)
 
-    console.log(`本地中心仓库初始化完成: ${cwd}`)
+    console.log(`本地中心仓库初始化完成: cd ${cwd}`)
 }
 
 
